@@ -1,4 +1,4 @@
-package kr.ac.jejunu.portalminexam.user;
+package kr.ac.jejunu.portalmidexam.user;
 
 public class User {
     private Long id;
