@@ -2,17 +2,31 @@ package kr.ac.jejunu.portalmidexam.user;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
 
 @Configuration
 public class DaoFactory {
+    private String className = "com.mysql.cj.jdbc.Driver";
+    private String url = "jdbc:mysql://localhost/jeju";
+    private String username = "jeju";
+    private String password = "jejupw";
     @Bean
-    public UserDao userDao() {
-        UserDao userDao = new UserDao(connectionMaker());
+    public UserDao userDao() throws ClassNotFoundException {
+        UserDao userDao = new UserDao(dataSource());
         return userDao;
     }
-
     @Bean
-    public ConnectionMaker connectionMaker() {
-        return new JejuConnectionMaker();
+    public DataSource dataSource() throws ClassNotFoundException {
+        SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+        dataSource.setDriverClass((Class<? extends Driver>) Class.forName(className));
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        return dataSource;
     }
 }
