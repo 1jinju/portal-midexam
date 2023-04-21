@@ -31,7 +31,7 @@ public class UserDao {
 
     public void update(User user) throws SQLException {
         StatementStrategy statementStrategy = connection -> {
-            PreparedStatement preparedStatement = preparedStatement = connection.prepareStatement
+            PreparedStatement  preparedStatement = connection.prepareStatement
                     ("update userinfo set name = ?, password = ? where id = ?");
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getPassword());
@@ -50,4 +50,5 @@ public class UserDao {
         };
         jdbcContext.jdbcContextForUpdate(statementStrategy);
     }
+
 }
