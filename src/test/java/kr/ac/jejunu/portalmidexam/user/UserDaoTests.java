@@ -1,5 +1,6 @@
 package kr.ac.jejunu.portalmidexam.user;
 
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +34,16 @@ public class UserDaoTests {
 
     @Test
     public void insert() throws SQLException, ClassNotFoundException {
+        User user = insertedUser();
+
+        User insertedUser = userDao.findById(user.getId());
+        assertThat(user.getId(), greaterThan(1l));
+        assertThat(insertedUser.getId(), is(user.getId()));
+        assertThat(insertedUser.getName(), is(user.getName()));
+        assertThat(insertedUser.getPassword(), is(user.getPassword()));
+    }
+
+    private static User insertedUser() throws ClassNotFoundException, SQLException {
         String name = "jinju";
         String password = "1111";
         User user = new User();
@@ -40,11 +51,27 @@ public class UserDaoTests {
         user.setPassword(password);
 
         userDao.insert(user);
+        return user;
+    }
+    @Test
+    public void update() throws SQLException, ClassNotFoundException {
+        User user = insertedUser();
+        String updatedName = "updatedJinju";
+        String updatedPassword = "2222";
+        user.setName(updatedName);
+        user.setPassword(updatedPassword);
+        userDao.update(user);
 
-        User insertedUser = userDao.findById(user.getId());
-        assertThat(user.getId(), greaterThan(1l));
-        assertThat(insertedUser.getId(), is(user.getId()));
-        assertThat(insertedUser.getName(), is(user.getName()));
-        assertThat(insertedUser.getPassword(), is(user.getPassword()));
+        User updatedUser = userDao.findById(user.getId());
+        assertThat(updatedUser.getName(), is(user.getName()));
+        assertThat(updatedUser.getPassword(), is(user.getPassword()));
+    }
+    @Test
+    public void delete() throws SQLException, ClassNotFoundException {
+        User user = insertedUser();
+        userDao.delete(user.getId());
+
+        User deletedUser = userDao.findById(user.getId());
+        assertThat(deletedUser, IsNull.nullValue());
     }
 }
