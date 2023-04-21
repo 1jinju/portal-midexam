@@ -11,14 +11,14 @@ public class UserDao {
     }
 
     public User findById(Long id) throws ClassNotFoundException, SQLException {
+        StatementStrategy statementStrategy = new FindStatementStrategy(id);
         User user = null;
         ResultSet resultSet = null;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement("select id, name, password from userinfo where id = ?");
-            preparedStatement.setLong(1, id);
+            preparedStatement = statementStrategy.makeStatement(connection);
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
                 user = new User();
@@ -47,15 +47,13 @@ public class UserDao {
     }
 
     public void insert(User user) throws ClassNotFoundException, SQLException {
+        StatementStrategy statementStrategy = new InsertStatementStrategy(user);
         ResultSet resultSet = null;
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement
-                    ("insert into userinfo (name, password) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getPassword());
+            preparedStatement = statementStrategy.makeStatement(connection);
             preparedStatement.executeUpdate();
             resultSet = preparedStatement.getGeneratedKeys();
             resultSet.next();
@@ -80,15 +78,12 @@ public class UserDao {
     }
 
     public void update(User user) throws SQLException {
+        StatementStrategy statementStrategy = new UpdateStatementStrategy(user);
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement
-                    ("update userinfo set name = ?, password = ? where id = ?");
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setLong(3, user.getId());
+            preparedStatement = statementStrategy.makeStatement(connection);
             preparedStatement.executeUpdate();
         } finally {
             try {
@@ -105,13 +100,12 @@ public class UserDao {
     }
 
     public void delete(Long id) throws SQLException {
+        StatementStrategy statementStrategy = new DeleteStatementStrategy(id);
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement
-                    ("delete from userinfo where id = ?");
-            preparedStatement.setLong(1, id);
+            preparedStatement = statementStrategy.makeStatement(connection);
             preparedStatement.executeUpdate();
         } finally {
             try {
